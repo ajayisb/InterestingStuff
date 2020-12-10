@@ -1,3 +1,3 @@
 # InterestingStuff
 
-This repository is create to share my innovative/jugaadu code. 
+This repository is created to share my innovative/jugaadu code. 
