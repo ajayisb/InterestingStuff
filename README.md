@@ -1,3 +1,3 @@
 # InterestingStuff
 
-This repository is created to store all my finagle code. :) 
+This repository is created to store my code snippets :) 
