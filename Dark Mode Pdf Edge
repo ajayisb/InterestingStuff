@@ -1,5 +1,4 @@
 /*Dark Mode Pdf Edge*/
--------------------
 var cover = document.createElement("div"); 
 let css = ` 
     position: fixed; 
