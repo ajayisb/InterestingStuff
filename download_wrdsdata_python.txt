@@ -1,0 +1,7 @@
+# import wrds
+# conn = wrds.Connection()
+
+# conn.list_libraries()
+# conn.list_tables(library='crsp_a_stock')  
+# # company = conn.get_table(library='comp', table='fundq', obs=5)
+# company = conn.get_table(library='crsp_a_stock', table='dsf_v2', columns=['permno','permco','yyyymmdd','dlyret'], obs=5)
