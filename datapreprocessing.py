@@ -12,7 +12,7 @@ guidance['f_fqtr'] = (guidance['f_fqtr'] - 1) % 4 + 1
 
 
 ##########################################################
-## creating lag fiscal year and fiscal quarter
+## Creating lag fiscal year and fiscal quarter
 
 guidance_f['l_fqtr'] = guidance_f['fqtr'] - 1
 # Adjust the fiscal year if the previous quarter is 0 (Q0)
@@ -71,9 +71,29 @@ comp_volatility1 = comp_volatility[
 
 
 
+# Generate variable columns
+def select_proxy_columns(prefix, n):
+    return [f'{prefix}{i}' for i in range(1, n + 1)]
+proxy_rel_columns = ['proxy_rel{}'.format(i) for i in range(1, totalIndustries+1)]
+
+# Drop duplicate 'end_date' columns, keeping the first occurrence
+industry_thresholds_df = industry_thresholds_df.loc[:, ~industry_thresholds_df.columns.duplicated()]
 
 
+## keep the maximum asset lender per facid:
+proxy_a1_s_selected = proxy_a1_s.loc[proxy_a1_s.dropna(subset=['facid']).groupby('facid')['bank_asset'].idxmax().dropna()]
 
+## Number of deals in last 3 years:
+df['LEADREPU'] = df.groupby('lender_companyid')['deals_per_year'].rolling(window=3, min_periods=1).sum().reset_index(level=0, drop=True)
+
+## WAM:
+# Group by PackageID and calculate weighted sums
+grouped = maturity_df.groupby('packageid').apply(lambda x: pd.Series({
+    'sum_weighted_maturities': (x['maturity'] * x['facilityamt']).sum(),
+    'sum_amounts': x['facilityamt'].sum()
+})).reset_index()
+# Calculate the average maturity for each PackageID
+grouped['average_maturity'] = grouped['sum_weighted_maturities'] / grouped['sum_amounts']
 
 
 
