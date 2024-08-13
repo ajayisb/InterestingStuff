@@ -1,0 +1,3 @@
+eststo clear
+esttab using "regression_results.doc", replace se star(* 0.10 ** 0.05 *** 0.01) title("RegressinResults")
+reghdfe $ylist $xlist p_year_top10_bank, absorb(dyear gvkey_comp) cluster(gvkey_comp) , if dyear>=1998  & large==1 
