@@ -1,3 +1,32 @@
+
+## save the results to document
 eststo clear
 esttab using "regression_results.doc", replace se star(* 0.10 ** 0.05 *** 0.01) title("RegressinResults")
 reghdfe $ylist $xlist p_year_top10_bank, absorb(dyear gvkey_comp) cluster(gvkey_comp) , if dyear>=1998  & large==1 
+
+asdoc reghdfe $ylist $xlist p_year_top10_bank, absorb(dyear gvkey_comp) cluster(gvkey_comp) , if dyear>=1998  & large==1 
+
+global ylist ppind   
+xtset gvkey_comp
+xtlogit $ylist $xlist p_year_top10_bank i.dyear if dyear>=1998  & large==1 & rating_mtd1!=. , fe 
+			scalar pr2 = e(r2_a)
+			eststo: scalar r2_a = pr2
+			scalar loglik = e(ll)
+			estadd scalar loglik = loglik
+			estadd scalar firmct = e(N_clust)
+			estadd loc FirmFE "Yes", replace
+			estadd loc YearFE "Yes", replace
+			estadd loc RatFE "No", replace		
+
+esttab _all using "with finfirms\latex tables\T5rs.tex" , pr2 star(* 0.10 ** 0.05 *** 0.01) b(%11.3f) replace label compress depvars nonotes nogaps booktabs ///
+		keep( $xlist  p_year_top10_bank _cons) order( $xlist   p_year_top10_bank  _cons) ///
+		s(N r2_a loglik firmct FirmFE YearFE RatFE, fmt(%12.0gc %9.2f  %9.2f %9.0gc %9s %9s %9s %9s %9s)  labels("Observations" "\(R^{2}\" "Log-Likelihood" "Number of firms" "Firm Fixed Effects" "Year Fixed Effects" "Rating Fixed Effects"))
+
+
+
+
+// Winserise
+winsor `v', gen(`v'_w) p(0.01)
+
+//Groupby
+by proxy_year: gen unique_bank_yearly = (bank_asset_r == .) & (lender_gvkey != lender_gvkey[_n-1])
